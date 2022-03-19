@@ -18,7 +18,7 @@ public class Main {
         BufferedReader reader;
         try {
             reader = new BufferedReader(new FileReader(
-                    "./dumps/RawLog 2022-03-18 23-12-04.txt"));
+                    "./dumps/RawLog 2022-03-19 18-59-28.txt"));
             String line = reader.readLine();
             while (line != null) {
                 if (line.length() > 3) {
@@ -27,9 +27,11 @@ public class Main {
                     // System.out.println(code + ": " + byte_number);
                     if (codesMap.containsKey(codeStr)) {
                         Code codeObj = codesMap.get(codeStr);
-                        if (hexStr.length() == codeObj.dlc_bytes * 2) {
+                        if (hexStr.length() == codeObj.dlcBytes * 2) {
+                            System.out.println(codeObj.description);
+                            // TODO: Implement bits decoding using DataField
                             byte[] bytesData = Utils.hexStringToByteArray(hexStr);
-                            ByteBuffer byteBuffer = ByteBuffer.allocate(codeObj.dlc_bytes / 2);
+                            ByteBuffer byteBuffer = ByteBuffer.allocate(codeObj.dlcBytes / 2);
                             // Read only the first 4 bytes
                             byteBuffer.put(Arrays.copyOfRange(bytesData, 0, 4));
                             int dataValue = byteBuffer.getInt();

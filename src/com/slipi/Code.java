@@ -1,16 +1,19 @@
 package com.slipi;
 
 
+import java.util.List;
 
 public class Code {
 
     String description;
-    int dlc_bytes;
+    int dlcBytes;
+    List<DataField> dataFields;
 
-    public Code(String description, int dlc_bytes) {
+    public Code(String description, int dlcBytes, List<DataField> dataFields) {
         this.description = description;
         // This is the number of bytes sent, the actual data could be only a subset
-        this.dlc_bytes = dlc_bytes;
+        this.dlcBytes = dlcBytes;
+        this.dataFields = dataFields;
     }
 
 }
