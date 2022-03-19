@@ -1,3 +1,7 @@
+/**
+ * CanBus signals interpretation references:
+ * https://docs.google.com/document/d/1rNRspKuQbytbaNKUIf3JJVx0mrz-yWTdS_IFul9KBXs/edit?usp=sharing
+ */
 package com.slipi;
 
 import java.io.BufferedReader;
