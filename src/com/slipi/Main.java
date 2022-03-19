@@ -18,7 +18,7 @@ public class Main {
         BufferedReader reader;
         try {
             reader = new BufferedReader(new FileReader(
-                    "RawLog 2022-03-18 23-12-04.txt"));
+                    "./dumps/RawLog 2022-03-18 23-12-04.txt"));
             String line = reader.readLine();
             while (line != null) {
                 if (line.length() > 3) {
