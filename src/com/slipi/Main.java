@@ -53,7 +53,7 @@ public class Main {
                                 try {
                                     int valueInt = byteBufferDataField.getInt();
                                     double value = valueInt * dataField.scale + dataField.offset;
-                                    System.out.println("\n" + dataField.name + ": " + value);
+                                    System.out.println("\n" + dataField.name + ": " + value + " " + dataField.unit);
                                 }
                                 catch (BufferUnderflowException e) {
                                     System.err.println("\n" + dataField.name + ": " + e + " -> " + e.getMessage());
