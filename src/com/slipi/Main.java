@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.BitSet;
 
 public class Main {
@@ -31,30 +32,30 @@ public class Main {
                         Code codeObj = codesMap.get(codeStr);
                         if (hexStr.length() == codeObj.dlcBytes * 2) {
                             byte[] bytesFull = Utils.hexStringToByteArray(hexStr);
-                            System.out.println("\n" + hexStr);
+                            System.out.println("\nHex: " + hexStr);
                             for (DataField dataField : codeObj.dataFields) {
                                 // Convert byte array to bits
                                 BitSet bitsFull = BitSet.valueOf(bytesFull);
                                 BitSet bitDataField = bitsFull.get(dataField.startBit, dataField.startBit + dataField.numBits);
-                                // Num bytes (closest multiple of 8 * bits)
-                                int numBytesDataField = dataField.numBits  / 8 + ((dataField.numBits  % 8 == 0) ? 0 : 1);
-                                for (int i=0; i<32; i++) {
+                                /*for (int i=0; i<bitDataField.length(); i++) {
                                     System.out.print(bitDataField.get(i)?1:0);
-                                }
-                                byte[] bytesDataField = bitDataField.toByteArray();
-                                // FIXME: Use the necessary type for every data field?!
+                                }*/
+                                // The ByteArray doesn't include the trailing zeros
+                                byte[] bytesDataFieldFromBitSet = bitDataField.toByteArray();
+                                // Pad bytes array
+                                byte[] bytesDataField = Arrays.copyOf(bytesDataFieldFromBitSet, Integer.BYTES);
+                                // Data are in LITTLE_ENDIAN format
                                 ByteBuffer byteBufferDataField = ByteBuffer.allocate(Integer.BYTES);
                                 byteBufferDataField.order(ByteOrder.LITTLE_ENDIAN);
-                                //byteBufferDataField.put(bytesDataField);  // Only 3 bytes, missing last zero. But since it is little endian it is important
-                                byteBufferDataField.put(bytesFull);
+                                byteBufferDataField.put(bytesDataField);
                                 byteBufferDataField.flip();
                                 try {
                                     int valueInt = byteBufferDataField.getInt();
                                     double value = valueInt * dataField.scale;
-                                    System.out.println(dataField.name + ": " + value);
+                                    System.out.println("\n" + dataField.name + ": " + value);
                                 }
                                 catch (BufferUnderflowException e) {
-                                    System.err.println(dataField.name + ": " + e + " -> " + e.getMessage());
+                                    System.err.println("\n" + dataField.name + ": " + e + " -> " + e.getMessage());
                                 }
 
                             }
