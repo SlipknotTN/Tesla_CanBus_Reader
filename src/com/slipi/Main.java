@@ -27,16 +27,17 @@ public class Main {
                 if (line.length() > 3) {
                     String codeStr = line.substring(0, 3);
                     String hexStr = line.substring(3);
-                    // System.out.println(code + ": " + byte_number);
                     if (codesMap.containsKey(codeStr)) {
                         Code codeObj = codesMap.get(codeStr);
                         if (hexStr.length() == codeObj.dlcBytes * 2) {
                             byte[] bytesFull = Utils.hexStringToByteArray(hexStr);
-                            System.out.println("\nHex: " + hexStr);
+                            // Debug Hex code
+                            //System.out.println("\nHex: " + hexStr);
                             for (DataField dataField : codeObj.dataFields) {
                                 // Convert byte array to bits
                                 BitSet bitsFull = BitSet.valueOf(bytesFull);
                                 BitSet bitDataField = bitsFull.get(dataField.startBit, dataField.startBit + dataField.numBits);
+                                // Debug binary code
                                 /*for (int i=0; i<bitDataField.length(); i++) {
                                     System.out.print(bitDataField.get(i)?1:0);
                                 }*/
@@ -51,7 +52,7 @@ public class Main {
                                 byteBufferDataField.flip();
                                 try {
                                     int valueInt = byteBufferDataField.getInt();
-                                    double value = valueInt * dataField.scale;
+                                    double value = valueInt * dataField.scale + dataField.offset;
                                     System.out.println("\n" + dataField.name + ": " + value);
                                 }
                                 catch (BufferUnderflowException e) {
