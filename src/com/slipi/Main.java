@@ -7,8 +7,10 @@ package com.slipi;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
+import java.nio.ByteOrder;
+import java.util.BitSet;
 
 public class Main {
 
@@ -28,14 +30,34 @@ public class Main {
                     if (codesMap.containsKey(codeStr)) {
                         Code codeObj = codesMap.get(codeStr);
                         if (hexStr.length() == codeObj.dlcBytes * 2) {
-                            System.out.println(codeObj.description);
-                            // TODO: Implement bits decoding using DataField
-                            byte[] bytesData = Utils.hexStringToByteArray(hexStr);
-                            ByteBuffer byteBuffer = ByteBuffer.allocate(codeObj.dlcBytes / 2);
-                            // Read only the first 4 bytes
-                            byteBuffer.put(Arrays.copyOfRange(bytesData, 0, 4));
-                            int dataValue = byteBuffer.getInt();
-                            System.out.println(codeObj.description + ": " + dataValue);
+                            byte[] bytesFull = Utils.hexStringToByteArray(hexStr);
+                            System.out.println("\n" + hexStr);
+                            for (DataField dataField : codeObj.dataFields) {
+                                // Convert byte array to bits
+                                BitSet bitsFull = BitSet.valueOf(bytesFull);
+                                BitSet bitDataField = bitsFull.get(dataField.startBit, dataField.startBit + dataField.numBits);
+                                // Num bytes (closest multiple of 8 * bits)
+                                int numBytesDataField = dataField.numBits  / 8 + ((dataField.numBits  % 8 == 0) ? 0 : 1);
+                                for (int i=0; i<32; i++) {
+                                    System.out.print(bitDataField.get(i)?1:0);
+                                }
+                                byte[] bytesDataField = bitDataField.toByteArray();
+                                // FIXME: Use the necessary type for every data field?!
+                                ByteBuffer byteBufferDataField = ByteBuffer.allocate(Integer.BYTES);
+                                byteBufferDataField.order(ByteOrder.LITTLE_ENDIAN);
+                                //byteBufferDataField.put(bytesDataField);  // Only 3 bytes, missing last zero. But since it is little endian it is important
+                                byteBufferDataField.put(bytesFull);
+                                byteBufferDataField.flip();
+                                try {
+                                    int valueInt = byteBufferDataField.getInt();
+                                    double value = valueInt * dataField.scale;
+                                    System.out.println(dataField.name + ": " + value);
+                                }
+                                catch (BufferUnderflowException e) {
+                                    System.err.println(dataField.name + ": " + e + " -> " + e.getMessage());
+                                }
+
+                            }
                         }
                     }
                 }

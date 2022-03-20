@@ -2,18 +2,21 @@ package com.slipi;
 
 public class DataField {
     String name;
-    int numbits;
-    float scale;
+    int startBit;
+    int numBits;
+    double scale;
 
-    public DataField(String name, int numBits, float scale) {
+    public DataField(String name, int startBit, int numBits, double scale) {
         this.name = name;
-        this.numbits = numBits;
+        this.startBit = startBit;
+        this.numBits = numBits;
         this.scale = scale;
     }
 
-    public DataField(String name, int numBits) {
+    public DataField(String name, int startBit, int numBits) {
         this.name = name;
-        this.numbits = numBits;
-        this.scale = 1.0f;
+        this.startBit = startBit;
+        this.numBits = numBits;
+        this.scale = 1.0;
     }
 }
