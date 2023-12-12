@@ -93,8 +93,7 @@ public class Main {
                                 try {
 
                                     Integer valueInt;
-                                    // In case of signed integer check the first bit to see of negative and double check
-                                    // the length of the bits since trailing zeros could have been removed
+                                    // In case of signed integer check the first bit to see if it is negative
                                     if (dataField.signed && Character.toString(bigEndianBits.charAt(0)).equals("1")) {
                                         // We don't always have exactly 32 bits, so we need to pass
                                         // from unsigned int and custom two's complement
