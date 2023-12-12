@@ -55,52 +55,26 @@ public class Main {
                             // Debug Hex code
                             //System.out.println("\nFull Hex: " + hexStr);
                             String binStr = Main.hexToBin(hexStr);
+
                             for (DataField dataField : codeObj.dataFields) {
 
-                                if (!dataField.name.equals("Rear Torque")) {
-                                    continue;
-                                }
-
-                                // TODO: Both are wrong even with unsigned, not correct since it is little endian,
-                                // so there should be shift at the beginning?!
-//                                String extractedBits = binStr.substring(dataField.startBit, dataField.startBit + dataField.numBits);
-//                                int remainder = (dataField.numBits % 4 > 0)?1:0;
-//                                int numBytes = dataField.numBits / 4 + remainder;
-//                                // Convert from little to big endian inverting bytes ordering
-//                                StringBuilder[] bytesBitsBuilders = new StringBuilder[numBytes];
-//                                for (int i=0; i<numBytes; i++) {
-//                                    bytesBitsBuilders[i] = new StringBuilder();
-//                                }
-//                                for (int i=extractedBits.length()-1; i>=0; i--) {
-//                                    int innerRemainder = ((i+1) % 4 > 0)?1:0;
-//                                    int byteOneIndex = (i + 1) / 4 + innerRemainder;
-//                                    bytesBitsBuilders[byteOneIndex - 1].append(extractedBits.charAt(i));
-//                                }
-//                                String bigEndianBits = new String();
-//                                for (int i=bytesBitsBuilders.length - 1; i>=0; i--) {
-//                                    bigEndianBits += bytesBitsBuilders[i].toString();
-//                                }
-//                                System.out.println("\nExtracted bin (" + extractedBits.length() + "): " + extractedBits + ", big endian: " + bigEndianBits);
-
-                                // Convert byte array to bits (little endian)
+                                // Convert byte array to bits
                                 BitSet bitsFull = BitSet.valueOf(bytesFull);
                                 BitSet bitDataField = bitsFull.get(dataField.startBit, dataField.startBit + dataField.numBits);
-                                // Debug binary code
-                                System.out.println();
-                                //System.out.println("Binary code from BitSet: ");
-                                for (int i = 0; i < dataField.numBits; i++) {
-                                    if (i < bitDataField.length()) {
-                                        System.out.print(bitDataField.get(i) ? 1 : 0);
-                                    } else {
-                                        System.out.print("0");
-                                    }
-                                    if ((i + 1) % 4 == 0 && i > 0) {
-                                        System.out.print(" ");
-                                    }
-                                }
-                                System.out.println();
-                                //BitSet indexes go from less significant bit to most
-                                String bigEndianBits = "";
+
+                                // The ByteArray doesn't include the trailing zeros
+                                byte[] bytesDataFieldFromBitSet = bitDataField.toByteArray();
+                                // Pad bytes array
+                                byte[] bytesDataField = Arrays.copyOf(bytesDataFieldFromBitSet, Integer.BYTES);
+                                // Data are in LITTLE_ENDIAN format
+                                ByteBuffer byteBufferDataField = ByteBuffer.allocate(Integer.BYTES);
+                                byteBufferDataField.order(ByteOrder.LITTLE_ENDIAN);
+                                byteBufferDataField.put(bytesDataField);
+                                byteBufferDataField.flip();
+
+                                //BitSet indexes go from less significant bit to most, reverse order
+                                System.out.print("\nBinary: ");
+                                StringBuilder bigEndianBits = new StringBuilder();
                                 for (int i = dataField.numBits - 1; i >= 0; i--) {
                                     String bitValue;
                                     if (i >= bitDataField.length()) {
@@ -112,30 +86,19 @@ public class Main {
                                     if (i % 4 == 0) {
                                         System.out.print(" ");
                                     }
-                                    bigEndianBits += bitValue;
+                                    bigEndianBits.append(bitValue);
                                 }
                                 System.out.println();
 
-                                // The ByteArray doesn't include the trailing zeros
-                                byte[] bytesDataFieldFromBitSet = bitDataField.toByteArray();
-                                // Pad bytes array
-                                byte[] bytesDataField = Arrays.copyOf(bytesDataFieldFromBitSet, Integer.BYTES);
-                                // Data are in LITTLE_ENDIAN format
-                                ByteBuffer byteBufferDataField = ByteBuffer.allocate(Integer.BYTES);
-                                byteBufferDataField.order(ByteOrder.LITTLE_ENDIAN);
-                                byteBufferDataField.put(bytesDataField);
-                                byteBufferDataField.flip();
-                                // Assuming offset sign is not affected by valueInt sign
                                 try {
 
                                     Integer valueInt;
                                     // In case of signed integer check the first bit to see of negative and double check
                                     // the length of the bits since trailing zeros could have been removed
                                     if (dataField.signed && Character.toString(bigEndianBits.charAt(0)).equals("1")) {
-                                        System.out.println("Signed negative");
                                         // We don't always have exactly 32 bits, so we need to pass
                                         // from unsigned int and custom two's complement
-                                        int integerValue = Integer.parseUnsignedInt(bigEndianBits, 2);
+                                        int integerValue = Integer.parseUnsignedInt(bigEndianBits.toString(), 2);
                                         integerValue -= 1;
                                         String binStrMinusOne = Integer.toBinaryString(integerValue);
                                         StringBuilder negBitsBuilder = new StringBuilder();
@@ -153,8 +116,9 @@ public class Main {
                                     else {
                                         valueInt = byteBufferDataField.getInt();
                                     }
+                                    // Assuming offset sign is not affected by valueInt sign
                                     double value = valueInt * dataField.scale + dataField.offset;
-                                    System.out.println(dataField.name + " int: " + valueInt + " double: " + value + " " + dataField.unit);
+                                    System.out.println(dataField.name + " int: " + valueInt + ", double: " + value + " " + dataField.unit);
                             }
 
                             catch (BufferUnderflowException e) {
