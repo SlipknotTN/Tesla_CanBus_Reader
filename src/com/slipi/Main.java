@@ -76,12 +76,7 @@ public class Main {
                                 System.out.print("\nBinary: ");
                                 StringBuilder bigEndianBits = new StringBuilder();
                                 for (int i = dataField.numBits - 1; i >= 0; i--) {
-                                    String bitValue;
-                                    if (i >= bitDataField.length()) {
-                                        bitValue = "0";
-                                    } else {
-                                        bitValue = (bitDataField.get(i) ? "1" : "0");
-                                    }
+                                    String bitValue = (bitDataField.get(i) ? "1" : "0");
                                     System.out.print(bitValue);
                                     if (i % 4 == 0) {
                                         System.out.print(" ");
