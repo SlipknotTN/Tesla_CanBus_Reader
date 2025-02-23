@@ -1,4 +1,4 @@
-package com.slipi;
+package com.slipi.core;
 
 
 import java.util.List;
