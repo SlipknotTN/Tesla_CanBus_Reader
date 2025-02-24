@@ -21,7 +21,11 @@ public class Main {
         BufferedReader reader;
 
         try {
-            reader = new BufferedReader(new FileReader("./dumps/RawLog 2025-02-22 13-32-03 - drive - 80.txt"));
+            reader = new BufferedReader(new FileReader(
+                    //"./dumps/RawLog 2025-02-15 13-57-36 - battery 42.txt"));
+                    "./dumps/RawLog 2025-02-18 19-08-00 - battery 37.txt"));
+                    //"./dumps/RawLog 2025-02-22 12-59-12 - charging - 36.txt"));
+                    //"./dumps/RawLog 2025-02-22 13-32-03 - drive - 80.txt"));
             String line = reader.readLine();
             while (line != null) {
                 ArrayList<ValuedDataField> valuedDataFields = DataDecodingUtils.extractData(line, codesMap, null);
