@@ -33,6 +33,7 @@ public class CodesMap extends HashMap<String, Code> {
         )));
         // No correspondence to table
         this.put("292", new Code("SOC state 292", 8, List.of(
+                // Correct SOC level before 2024.20
                 new DataField(DataKeyEnumOBD.UI_SOC_292.name(), "%", 0, 10, false,0.1),
                 new DataField(DataKeyEnumOBD.MIN_SOC_292.name(), "%", 10, 10, false, 0.1),
                 new DataField(DataKeyEnumOBD.MAX_SOC_292.name(), "%", 20, 10, false, 0.1),
@@ -46,7 +47,7 @@ public class CodesMap extends HashMap<String, Code> {
                 // 0 - normal, 1 - slippery
                 new DataField(DataKeyEnumOBD.TRACTION_MODE.name(), "", 2, 3, false)
         )));
-        // New way, but not exactly correct
+        // New way, but not totally correct
         /*
          SG_ BMS_energyStatusIndex M : 0|2@1+ (1,0) [0|0] "" X
          SG_ BMS_nominalFullPackEnergy m0 : 16|16@1+ (0.02,0) [0|0] "kWh" X
@@ -66,13 +67,11 @@ public class CodesMap extends HashMap<String, Code> {
                 new DataField(DataKeyEnumOBD.NOMINAL_FULL_PACK_ENERGY_OR_DOUBLE_ENERGY_BUFFER.name(), "kWh", 16, 16, false, 0.02),
                 // Index 0 - Same as ScanMyTesla
                 new DataField(DataKeyEnumOBD.NOMINAL_ENERGY_REMAINING.name(), "kWh", 32, 16, false, 0.02),
-                // Index 0 - SOC % same as ScanMyTesla, but it is not precise as UI_SOC_352 with index 2
-                new DataField(DataKeyEnumOBD.SOC_SMT.name(), "%", 34, 14, false, 0.1),
                 // Index 0 (48, 16) is the same of Index 1 (32, 16). Seems correct, slightly lower than NOMINAL_ENERGY_REMAINING (not available in ScanMyTesla)
                 new DataField(DataKeyEnumOBD.IDEAL_ENERGY_REMAINING.name(), "kWh", 48, 16, false, 0.02),
                 // Valid only with index 1, not tested
                 new DataField(DataKeyEnumOBD.FULLY_CHARGED.name(), "", 15, 1, false),
-                // Valid only with index 2, to be further tested
+                // Valid only with index 2, to be further tested. This should be the correct SOC level after 2024.20
                 new DataField(DataKeyEnumOBD.UI_SOC_352.name(), "%", 53, 10, false, 0.1)
         )));
         // Tested
