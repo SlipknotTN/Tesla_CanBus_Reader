@@ -36,7 +36,8 @@ public class CodesMap extends HashMap<String, Code> {
                 new DataField(DataKeyEnumOBD.UI_SOC_292.name(), "%", 0, 10, false,0.1),
                 new DataField(DataKeyEnumOBD.MIN_SOC_292.name(), "%", 10, 10, false, 0.1),
                 new DataField(DataKeyEnumOBD.MAX_SOC_292.name(), "%", 20, 10, false, 0.1),
-                new DataField(DataKeyEnumOBD.AVG_SOC_292.name(), "%", 30, 10, false, 0.1)
+                new DataField(DataKeyEnumOBD.AVG_SOC_292.name(), "%", 30, 10, false, 0.1),
+                new DataField(DataKeyEnumOBD.FULL_PACK_WHEN_NEW_ENERGY.name(), "kWh", 40, 10, false, 0.1)
         )));
         // No data saved by ScanMyTesla, but available.
         this.put("293", new Code("Steering and traction modes", 8, List.of(
